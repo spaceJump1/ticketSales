@@ -1,0 +1,18 @@
+:host {
+    height: 60px;
+    width: 100%;
+    display: block;
+}
+
+.time-block {
+    position: absolute;
+    right: 0;
+    padding: 4px;
+}
+
+.userName {
+    padding: 4px;
+    position: absolute;
+    right: 100px;
+    top: 15px;
+}

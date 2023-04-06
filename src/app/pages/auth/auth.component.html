@@ -1,12 +1,23 @@
-<div class="d-flex">
+<div>
   <p-tabView>
-    <p-tabPanel header="Авторизация">
-      <app-authorization></app-authorization>
+    <p-tabPanel [cache]="isTabCaching" header="Авторизация">
+      <ng-template pTemplate="content">
+        <app-authorization [inputProp]="textProp"
+                          [inputObj]="big"
+        
+        
+        ></app-authorization>
+      </ng-template>
+      
     </p-tabPanel>
     <p-tabPanel header="Регистрация">
+      <app-registration></app-registration>
 
     </p-tabPanel>
 
   </p-tabView>
+  <p (click)="changeProp()">123</p>
 
 </div>
+
+<p-toast position="top-left"></p-toast>
