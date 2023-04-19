@@ -14,7 +14,7 @@ export class HeaderComponent implements OnInit, OnDestroy, OnChanges {
   items: MenuItem[];
   time: Date;
   private timerInterval: number;
-  private settingsActive: boolean = true;
+  private settingsActive: boolean = false;
   public user: IUser;
   
   @Input() menuType: IMenuType;
