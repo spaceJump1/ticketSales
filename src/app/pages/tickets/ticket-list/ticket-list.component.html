@@ -1,7 +1,8 @@
 <div *ngIf="tickets">
     
     <div>
-       <p>Количество элементов: {{tourWrap.childElementCount}}</p>
+        <p>Количество элементов: {{tickets.length}}</p>
+       <!-- <p>Количество элементов: {{tourWrap.childElementCount}}</p> -->
        <p>Активный элемент: {{blockDirective.activeElementIndex}}</p>
     </div>
 
@@ -26,5 +27,6 @@
                 <img class="w-100" src="/assets/img/{{item.img}}"/>
             </div>
         </div>
+        
     </div>
 </div>

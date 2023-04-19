@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 
 @Directive({
   selector: '[appBlocksStyle]', 
@@ -15,9 +15,11 @@ export class BlocksStyleDirective implements OnInit, AfterViewInit, OnChanges {
   @Input() initFirst: boolean = false;
 
   @Output() renderComplete = new EventEmitter();
+  
 
   private items: HTMLElement[];
   private index: number = 0;
+  container: HTMLElement;
 
   public activeElementIndex: number;
 
@@ -34,6 +36,7 @@ export class BlocksStyleDirective implements OnInit, AfterViewInit, OnChanges {
       if (this.initFirst) {
         if (this.items[0]) {
           (this.items[0] as HTMLElement).setAttribute('style', 'border: 2px solid red');
+          
         }
       }
     } else {
@@ -56,7 +59,10 @@ export class BlocksStyleDirective implements OnInit, AfterViewInit, OnChanges {
     if (ev.key === 'ArrowRight') {
       this.index++;
       if (this.items[this.index]) {
-        (this.items[this.index] as HTMLElement).setAttribute('style', 'border: 2px solid red');
+        const nextElement = (this.items[this.index] as HTMLElement);
+        nextElement.setAttribute('style', 'border: 2px solid red');
+        nextElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' 
+      });
       } else {
         // Проверка на отрицательное значение this.index
         if (this.index < 0) {
@@ -66,7 +72,10 @@ export class BlocksStyleDirective implements OnInit, AfterViewInit, OnChanges {
     } else if (ev.key === 'ArrowLeft') {
       this.index--;
       if (this.items[this.index]) {
-        (this.items[this.index] as HTMLElement).setAttribute('style', 'border: 2px solid red');
+      const prevElement = (this.items[this.index] as HTMLElement);
+      prevElement.setAttribute('style', 'border: 2px solid red');
+      prevElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' 
+    });
       } else {
         // Проверка на отрицательное значение this.index
         if (this.index < 0) {
@@ -79,8 +88,13 @@ export class BlocksStyleDirective implements OnInit, AfterViewInit, OnChanges {
 
   initStyle(index:number) {
     if (this.items[index]) {
-      (this.items[index] as HTMLElement).setAttribute('style', 'border: 2px solid red');
+      const element = this.items[index] as HTMLElement
+      element.setAttribute('style', 'border: 2px solid red');
     }
+  }
+
+  updateItems(): void {
+    this.items = this.el.nativeElement.querySelectorAll(this.selector);
   }
   
 }

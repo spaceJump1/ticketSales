@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { IMenuType } from 'src/app/models/menuType';
 import { IUser } from 'src/app/models/users';
@@ -37,7 +37,7 @@ export class HeaderComponent implements OnInit, OnDestroy, OnChanges {
       },
       {
         label: 'Настройки',
-        routerLink:['/settings'],
+        routerLink:['settings'],
         visible: this.settingsActive
       },
       {

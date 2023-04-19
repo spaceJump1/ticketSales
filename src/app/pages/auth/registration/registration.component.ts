@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { IUser } from 'src/app/models/users';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { ConfigService } from 'src/app/services/config/config.service';
 
 @Component({
   selector: 'app-registration',
@@ -16,6 +17,7 @@ export class RegistrationComponent implements OnInit {
   email: string;
   cardNumber: string;
   selectedValueReg: boolean;
+  showCardNumber: boolean;
 
 
   constructor(private messageService: MessageService,
@@ -23,6 +25,7 @@ export class RegistrationComponent implements OnInit {
               ) { }
 
   ngOnInit(): void {
+    this.showCardNumber = ConfigService.config.useUserCard;
   }
 
   onRegAction(): void {
@@ -47,9 +50,8 @@ export class RegistrationComponent implements OnInit {
       if(this.selectedValueReg) {
         let userString = JSON.stringify(userObj);
         window.localStorage.setItem('user'+userObj.login, userString);
-      } else {
-        this.messageService.add({severity:'warn', summary:'Service Message', detail:'Пользователь уже зарегистрирован'});
-      }
+      } 
+  }
   }
 }
-}
+

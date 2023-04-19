@@ -4,5 +4,14 @@ export interface ITours {
     tourOperator: string,
     price: string,
     img: string,
-    id: string
+    id: string,
+    type: string,
+    data: string,
+    date?: string
+}
+
+export interface ITourTypeSelect {
+    label?: string,
+    value?: string,
+    date?: string
 }

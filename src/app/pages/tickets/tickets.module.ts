@@ -12,6 +12,11 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import { BlocksStyleDirective } from 'src/app/directive/blocks-style.directive';
 import { InputTextModule } from 'primeng/inputtext';
+import { CalendarModule } from 'primeng/calendar';
+import { SettingsComponent } from '../settings/settings/settings.component';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+
 
 
 @NgModule({
@@ -21,7 +26,7 @@ import { InputTextModule } from 'primeng/inputtext';
     FooterComponent,
     TicketListComponent,
     AsideComponent,
-    BlocksStyleDirective
+    BlocksStyleDirective,
   ],
   imports: [
     CommonModule,
@@ -29,7 +34,12 @@ import { InputTextModule } from 'primeng/inputtext';
     MenubarModule,
     DropdownModule,
     FormsModule,
-    InputTextModule
+    InputTextModule,
+    CalendarModule,
+    ToastModule
+  ],
+  providers: [
+    MessageService
   ]
 })
 export class TicketsModule { }

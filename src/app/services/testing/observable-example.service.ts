@@ -1,11 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ObservableExampleService {
+
+  private myBehaviorSubject = new BehaviorSubject<string>('some data of Behavior subject');
+  private mySubject = new Subject<string>();
+  private myObservable = new Observable<string>((subscriber) => {
+    setTimeout(() => {
+      subscriber.next('someValue');
+    }, 3000)
+  })
+
 
   constructor() { }
 
@@ -28,4 +37,17 @@ export class ObservableExampleService {
 
     // sub.unsubscribe()
   }
+
+  getObservable(): Observable<string> {
+    return this.myObservable;
+  }
+
+  getSubject(): Subject<string> {
+    return this.mySubject;
+  }
+
+  getBehaviorSubject(): BehaviorSubject<string> {
+    return this.myBehaviorSubject;
+  }
+
 }

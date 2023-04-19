@@ -1,7 +1,8 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { BlocksStyleDirective } from 'src/app/directive/blocks-style.directive';
-import { ITours } from 'src/app/models/tours';
+import { ITours, ITourTypeSelect  } from 'src/app/models/tours';
 import { TicketStorageService } from 'src/app/services/ticket-storage/ticket-storage.service';
 import { TicketsService } from 'src/app/services/tickets/tickets.service';
 
@@ -12,8 +13,14 @@ import { TicketsService } from 'src/app/services/tickets/tickets.service';
 })
 export class TicketListComponent implements OnInit, AfterViewInit {
 
+  tourUnsubscriber: Subscription;
+
   tickets: ITours[];
   ticketCopy: ITours[];
+  filterData: {type: ITours[] | null} = {
+    type: null
+  }
+
 
   @ViewChild('tourWrap', {read: BlocksStyleDirective}) blockDirective: BlocksStyleDirective;
   @ViewChild('tourWrap') tourWrap: ElementRef;
@@ -30,11 +37,38 @@ export class TicketListComponent implements OnInit, AfterViewInit {
         this.ticketCopy = [...this.tickets];
         this.ticketStorage.setStorage(data);
 
-        // setTimeout(() => {
-        //   this.blockDirective.initStyle(3)
-        // })
+        setTimeout(() => {
+          this.blockDirective.updateItems();
+          this.blockDirective.initStyle(0);  // сбрасываем индекс на 0 элемент
+        });
       }
     );
+
+    this.tourUnsubscriber = this.ticketService.getTicketTypeObservable().subscribe((data:ITourTypeSelect) => {  
+      console.log('data', data)  
+
+      let ticketType: string;
+      switch (data.value) {
+        case "single":
+          this.tickets = this.ticketCopy.filter((el) => el.type === "single");
+          break;
+        case "multi":
+          this.tickets = this.ticketCopy.filter((el) => el.type === "multi");
+          break;
+        case "all":
+          this.tickets = [...this.ticketCopy];
+          break;
+ 
+      }
+
+      if (data.date) {
+        const dateWithoutTime = new Date(data.date).toISOString().split('T');
+        const dateValue = dateWithoutTime[0]
+        console.log('dateValue',dateValue)
+        this.tickets = this.ticketCopy.filter((el) => el.date === dateValue);
+      }
+      this.filterData.type = [...this.tickets];
+    });
   }
 
   ngAfterViewInit() { }
@@ -48,7 +82,7 @@ export class TicketListComponent implements OnInit, AfterViewInit {
     const searchValue = (<HTMLInputElement>ev.target).value;
 
     if (searchValue) {
-      this.tickets = this.ticketCopy.filter((el)=> el.name.indexOf(searchValue)!== -1);
+      this.tickets = this.ticketCopy.filter((el)=> el.name.indexOf(searchValue)!== 0);
     } else {
       this.tickets = [...this.ticketCopy];
     }
@@ -60,6 +94,7 @@ export class TicketListComponent implements OnInit, AfterViewInit {
     el.setAttribute('style', 'background-color: #f1f1d9');
   }
 
-
-
+  ngOnDestroy() {
+    this.tourUnsubscriber.unsubscribe();
+  }
 }

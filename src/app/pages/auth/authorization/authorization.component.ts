@@ -53,12 +53,16 @@ export class AuthorizationComponent implements OnInit, OnDestroy, OnChanges {
   onAuth(ev: Event): void {
     const authUser: IUser = {
       psw: this.psw,
-      login: this.login
+      login: this.login,
+      cardNumber: this.cardNumber
     }
 
     if (this.authService.checkUser(authUser)) {
       // console.log('auth true');
       this.UserService.setUser(authUser);
+
+      this.UserService.setToken('user-private-token');
+
       this.router.navigate(['tickets/tickets-list']);
     } else {
       console.log('auth false');
