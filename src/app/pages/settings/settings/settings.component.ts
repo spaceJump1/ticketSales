@@ -3,6 +3,7 @@ import {MenuItem, MessageService} from "primeng/api";
 import {AuthService} from "../../../services/auth/auth.service";
 import { ObservableExampleService } from 'src/app/services/testing/observable-example.service';
 import { Subscription } from 'rxjs';
+import { SettingsService } from 'src/app/services/settings/settings.service';
 
 
 @Component({
@@ -11,24 +12,25 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit, OnDestroy {
-  oldPassword: string;
-  newPassword: string;
-  confirmPassword: string;
 
   private subjectScope = this.observableExampleService.getSubject();
   private subscription: Subscription;
   private subjectUnsubscribe: Subscription;
+
+  settingsData: Subscription;
+  settingsDataSubject: Subscription;
   
-  isTouched:boolean = false;
+  isTouched: boolean = false;
 
   constructor(private authService: AuthService,
               private messageService: MessageService,
-              private observableExampleService: ObservableExampleService) { }
+              private observableExampleService: ObservableExampleService,
+              private settingsService: SettingsService) { }
 
   ngOnInit(): void {
-    this.subjectUnsubscribe = this.subjectScope.subscribe(data => console.log(data));
+    // this.subjectUnsubscribe = this.subjectScope.subscribe(data => console.log(data));
 
-    this.subjectScope.next('hello');
+    // this.subjectScope.next('hello');
 
   }
 

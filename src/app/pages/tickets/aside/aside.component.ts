@@ -2,7 +2,9 @@ import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { IMenuType } from 'src/app/models/menuType';
 import { ITourTypeSelect } from 'src/app/models/tours';
+import { SettingsService } from 'src/app/services/settings/settings.service';
 import { TicketsService } from 'src/app/services/tickets/tickets.service';
+
 
 @Component({
   selector: 'app-aside',
@@ -23,7 +25,8 @@ export class AsideComponent implements OnInit {
   @Output() updateMenuType: EventEmitter<IMenuType> = new EventEmitter()
 
   constructor(private ticketService: TicketsService,
-            private messageService: MessageService) { }
+            private messageService: MessageService,
+            private settingsService: SettingsService) { }
 
   ngOnInit(): void {
     this.menuTypes = [
@@ -56,6 +59,12 @@ export class AsideComponent implements OnInit {
     }
     });
     this.messageService.add({severity: 'error', summary: 'Error', detail: 'Error'});
+   }
+
+   initSettingsData(): void {
+    this.settingsService.loadUserSettingsSubject({
+      saveToken: false
+    });
    }
 
 }
