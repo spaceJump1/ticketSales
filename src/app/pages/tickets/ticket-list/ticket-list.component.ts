@@ -45,7 +45,7 @@ export class TicketListComponent implements OnInit, AfterViewInit {
     );
 
     this.tourUnsubscriber = this.ticketService.getTicketTypeObservable().subscribe((data:ITourTypeSelect) => {  
-      console.log('data', data)  
+      // console.log('data', data)  
 
       let ticketType: string;
       switch (data.value) {
@@ -78,16 +78,15 @@ export class TicketListComponent implements OnInit, AfterViewInit {
   }
 
   findTours(ev: Event): void {
-    console.log('ev', ev);
+    // console.log('ev', ev);
     const searchValue = (<HTMLInputElement>ev.target).value;
 
     if (searchValue) {
-      this.tickets = this.ticketCopy.filter((el)=> el.name.indexOf(searchValue)!== 0);
+      this.tickets = this.ticketCopy.filter((el)=> el.name.toLowerCase().indexOf(searchValue.toLowerCase())!== -1);
     } else {
       this.tickets = [...this.ticketCopy];
     }
   }
-
 
   diretiveRenderComplete(ev: boolean) {
     const el: HTMLElement = this.tourWrap.nativeElement;

@@ -2,8 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import {MenuItem, MessageService} from "primeng/api";
 import {AuthService} from "../../../services/auth/auth.service";
 import { ObservableExampleService } from 'src/app/services/testing/observable-example.service';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, take, takeUntil } from 'rxjs';
 import { SettingsService } from 'src/app/services/settings/settings.service';
+
 
 
 @Component({
@@ -17,51 +18,43 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   private subjectUnsubscribe: Subscription;
 
-  settingsData: Subscription;
-  settingsDataSubject: Subscription;
+  // settingsData: Subscription;
+  // settingsDataSubject: Subscription;
   
-  isTouched: boolean = false;
+  subjectForUnsubscribe = new Subject();
 
-  constructor(private authService: AuthService,
-              private messageService: MessageService,
-              private observableExampleService: ObservableExampleService,
+  constructor(private observableExampleService: ObservableExampleService,
               private settingsService: SettingsService) { }
 
   ngOnInit(): void {
-    // this.subjectUnsubscribe = this.subjectScope.subscribe(data => console.log(data));
+  //settingsData observable
+  //  this.settingsData = this.settingsService.loadUserSettings().subscribe((data) => {
+  //   console.log('settings data', data);
+  //  });
 
-    // this.subjectScope.next('hello');
 
+  //  //settings data subject
+  //  this.settingsDataSubject = this.settingsService.getSettingsSubjectObservable().pipe(take(1)).subscribe(
+  //   (data) => {
+  //     console.log('settings data from subject', data)
+  //   })
+
+  //takeUntil
+  this.settingsService.loadUserSettings().pipe(takeUntil(this.subjectForUnsubscribe)).subscribe((data) => {
+    console.log('takeUntil settings data', data);
+  });
+
+  this.settingsService.getSettingsSubjectObservable().pipe(takeUntil(this.subjectForUnsubscribe)).subscribe(
+    (data) => {
+      console.log('settings data from subject', data)
+    })
   }
 
+  ngOnDestroy(): void {
+    // this.settingsData.unsubscribe();
 
+    this.subjectForUnsubscribe.next(true);
+    this.subjectForUnsubscribe.complete();
 
-  changePassword() {
-    // this.isTouched=true;
-    // if (this.confirmPassword! = this.newPassword) return;
-
-    // const res = this.authService.changePassword(this.oldPassword,this.newPassword);
-
-    // if (res) {
-    //   this.messageService.add({
-    //     severity: 'success',
-    //     summary: `Пароль успешно изменен`,
-    //   });
-      
-    //   this.isTouched=false;
-    //   this.oldPassword='';
-    //   this.newPassword='';
-    //   this.confirmPassword='';
-    // } else {
-    //   this.messageService.add({
-    //     severity: 'error',
-    //     summary: 'Пароль не удалось изменить',
-    //   });
-    // }
-
-  }
-
-  ngOnDestroy() {
-    this.subjectUnsubscribe.unsubscribe();
   }
 }
