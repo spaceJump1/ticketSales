@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { INearestTour, ITourLocation, ITours } from 'src/app/models/tours';
+import { ICustomTicketData, INearestTour, ITourLocation, ITours } from 'src/app/models/tours';
 import { Observable, Subject, Subscription, map } from 'rxjs';
 import { TicketRestService } from '../rest/ticket-rest.service';
 import { ITourTypeSelect } from 'src/app/models/tours';
@@ -11,8 +11,12 @@ import { ITourTypeSelect } from 'src/app/models/tours';
 })
 export class TicketsService {
 
+  customTicketData: ICustomTicketData[];
+
+
   private ticketSubject = new Subject<ITourTypeSelect>();
   // readonly ticketType$ = this.ticketSubject.asObservable(); 
+
 
   constructor(private ticketRestService: TicketRestService) { }
 
@@ -46,5 +50,24 @@ export class TicketsService {
    getToursLocation(): Observable<ITourLocation[]> {
     return this.ticketRestService.getLocationList();
    }
+
+   transformData(data: INearestTour[], regions: ITourLocation[]): ICustomTicketData[] {
+    const newTicketData: ICustomTicketData[] = [];
+    data.forEach((el) => {
+      const newEl = { ...el } as ICustomTicketData;
+      newEl.region = regions.find((region) => el.locationId === region.id) as ITourLocation;
+      newTicketData.push(newEl);
+    });
+    return newTicketData;
+  }
+
+  getRandomNearestEvent(type: number): Observable<INearestTour> {
+    return this.ticketRestService.getRandomNearestEvent(type);
+  } 
+
+
+  sendTourData(data: any): Observable<any> {
+    return this.ticketRestService.sendTourData(data);
+  }
 
 }

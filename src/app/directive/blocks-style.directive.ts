@@ -61,28 +61,23 @@ export class BlocksStyleDirective implements OnInit, AfterViewInit, OnChanges {
       if (this.items[this.index]) {
         const nextElement = (this.items[this.index] as HTMLElement);
         nextElement.setAttribute('style', 'border: 2px solid red');
-        nextElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' 
-      });
+        nextElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest'});
       } else {
-        // Проверка на отрицательное значение this.index
-        if (this.index < 0) {
-          this.index = 0;
-        }
-      } 
-    } else if (ev.key === 'ArrowLeft') {
-      this.index--;
-      if (this.items[this.index]) {
-      const prevElement = (this.items[this.index] as HTMLElement);
-      prevElement.setAttribute('style', 'border: 2px solid red');
-      prevElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' 
-    });
-      } else {
-        // Проверка на отрицательное значение this.index
-        if (this.index < 0) {
-          this.index = 0;
-        }
+        this.index = this.items.length;
       }
-    } 
+      
+    } else if (ev.key === 'ArrowLeft') {
+        this.index--;
+        if(this.index < 0) {
+          this.index = 0;
+        }
+        if (this.items[this.index]) {
+          const prevElement = (this.items[this.index] as HTMLElement);
+          prevElement.setAttribute('style', 'border: 2px solid red');
+          prevElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        }  
+  }
+     
     this.activeElementIndex = this.index;
   } 
 

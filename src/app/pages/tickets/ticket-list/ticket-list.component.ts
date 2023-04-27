@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, debounceTime, fromEvent } from 'rxjs';
 import { BlocksStyleDirective } from 'src/app/directive/blocks-style.directive';
 import { ITours, ITourTypeSelect  } from 'src/app/models/tours';
 import { TicketStorageService } from 'src/app/services/ticket-storage/ticket-storage.service';
@@ -15,8 +15,15 @@ export class TicketListComponent implements OnInit, AfterViewInit {
 
   tourUnsubscriber: Subscription;
 
-  tickets: ITours[];
+  tickets: ITours[] = [];
   ticketCopy: ITours[];
+  loadCountBlock = false;
+  directiveReady = false;
+
+  searchTicketSub: Subscription;
+  ticketSearchValue: string;
+
+
   filterData: {type: ITours[] | null} = {
     type: null
   }
@@ -24,6 +31,10 @@ export class TicketListComponent implements OnInit, AfterViewInit {
 
   @ViewChild('tourWrap', {read: BlocksStyleDirective}) blockDirective: BlocksStyleDirective;
   @ViewChild('tourWrap') tourWrap: ElementRef;
+
+  @ViewChild('ticketSearch') ticketSearch: ElementRef;
+
+
 
   constructor(private ticketService: TicketsService,
               private ticketStorage: TicketStorageService,
@@ -44,7 +55,7 @@ export class TicketListComponent implements OnInit, AfterViewInit {
       }
     );
 
-    this.tourUnsubscriber = this.ticketService.getTicketTypeObservable().subscribe((data:ITourTypeSelect) => {  
+    this.tourUnsubscriber = this.ticketService.getTicketTypeObservable().subscribe((data: ITourTypeSelect) => {  
       // console.log('data', data)  
 
       let ticketType: string;
@@ -71,22 +82,33 @@ export class TicketListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() { }
+  ngAfterViewInit() {
+    const fromEventObserver = fromEvent(this.ticketSearch.nativeElement, 'keyup', {passive: true});
+
+    this.searchTicketSub = fromEventObserver.pipe(
+      debounceTime(200)).subscribe((ev: any) => {
+        if(this.ticketSearchValue) {
+          this.tickets = this.ticketCopy.filter((el) => el.name.toLowerCase().includes(this.ticketSearchValue.toLowerCase()));
+        } else {
+          this.tickets = [...this.ticketCopy];
+        }
+      });
+   }
 
   goToTicketInfoPage(item: ITours) {
     this.router.navigate([`/tickets/ticket/${item.id}`])
   }
 
-  findTours(ev: Event): void {
-    // console.log('ev', ev);
-    const searchValue = (<HTMLInputElement>ev.target).value;
+  // findTours(ev: Event): void {
+  //   // console.log('ev', ev);
+  //   const searchValue = (<HTMLInputElement>ev.target).value;
 
-    if (searchValue) {
-      this.tickets = this.ticketCopy.filter((el)=> el.name.toLowerCase().indexOf(searchValue.toLowerCase())!== -1);
-    } else {
-      this.tickets = [...this.ticketCopy];
-    }
-  }
+  //   if (searchValue) {
+  //     this.tickets = this.ticketCopy.filter((el)=> el.name.toLowerCase().indexOf(searchValue.toLowerCase())!== -1);
+  //   } else {
+  //     this.tickets = [...this.ticketCopy];
+  //   }
+  // }
 
   diretiveRenderComplete(ev: boolean) {
     const el: HTMLElement = this.tourWrap.nativeElement;
@@ -95,5 +117,6 @@ export class TicketListComponent implements OnInit, AfterViewInit {
 
   ngOnDestroy() {
     this.tourUnsubscriber.unsubscribe();
+    this.searchTicketSub.unsubscribe();
   }
 }

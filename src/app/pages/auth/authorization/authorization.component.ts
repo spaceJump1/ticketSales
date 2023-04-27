@@ -20,6 +20,7 @@ export class AuthorizationComponent implements OnInit, OnDestroy, OnChanges {
   selectedValue: boolean;
   cardNumber: string;
   authTextButton: string;
+  
   @Input() inputProp = 'test';
   @Input() inputObj: any;
 
@@ -37,12 +38,11 @@ export class AuthorizationComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy(): void {
-    console.log('destroy');
-    
+    // console.log('destroy');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('changes', changes);
+    // console.log('changes', changes);
   }
 
 
@@ -51,11 +51,15 @@ export class AuthorizationComponent implements OnInit, OnDestroy, OnChanges {
 
 
   onAuth(ev: Event): void {
+   
+
     const authUser: IUser = {
       psw: this.psw,
       login: this.login,
       cardNumber: this.cardNumber
     }
+
+    // const storedPsw = localStorage.getItem('psw');
 
     if (this.authService.checkUser(authUser)) {
       // console.log('auth true');

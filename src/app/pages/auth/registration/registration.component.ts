@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
+import { flatMap } from 'rxjs';
 import { IUser } from 'src/app/models/users';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { ConfigService } from 'src/app/services/config/config.service';
@@ -18,6 +19,7 @@ export class RegistrationComponent implements OnInit {
   cardNumber: string;
   selectedValueReg: boolean;
   showCardNumber: boolean;
+  needToSave: boolean = false;
 
 
   constructor(private messageService: MessageService,
@@ -31,8 +33,9 @@ export class RegistrationComponent implements OnInit {
   onRegAction(): void {
   }
 
-  onReg(ev: Event): void | boolean {
-    if (this.psw !== this.pswRepeat) {
+  onReg(ev: MouseEvent): void | boolean {
+
+    if (this.psw != this.pswRepeat) {
       this.messageService.add({severity:'error', summary:'Service Message', detail:'Пароли не совпадают'});
       return false;
     }
@@ -44,14 +47,27 @@ export class RegistrationComponent implements OnInit {
       email: this.email
     }
 
-    if (!this.authService.isUserExists(userObj)) {
-      this.authService.setUser(userObj);
-      this.messageService.add({severity:'success', summary:'Service Message', detail:'Зарегистрированы успешно'});
-      if(this.selectedValueReg) {
-        let userString = JSON.stringify(userObj);
-        window.localStorage.setItem('user'+userObj.login, userString);
-      } 
+    const isReg = this.authService.saveUser(userObj);
+
+    if (isReg.status) {
+      this.messageService.add({
+        severity: 'success',
+        summary: `Пользователь зарегистрирован`,
+      })
+    }
+
+    if(this.needToSave) {
+      this.authService.saveUser(userObj);
+      this.messageService.add({
+        severity: 'success',
+          summary: `Пользователь сохранен `,
+      });
+      return true;
+    } 
   }
+
+  removeUserFromStorage(ev: MouseEvent) {
+    this.authService.rememberUser();
   }
 }
 
