@@ -79,6 +79,10 @@ export class TicketListComponent implements OnInit, AfterViewInit {
         this.tickets = this.ticketCopy.filter((el) => el.date === dateValue);
       }
       this.filterData.type = [...this.tickets];
+      setTimeout(() => {
+        this.blockDirective.updateItems();
+        this.blockDirective.initStyle(0);
+      })
     });
   }
 
