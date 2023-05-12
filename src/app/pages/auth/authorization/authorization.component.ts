@@ -4,6 +4,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import {MessageService} from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from 'src/app/services/user/user.service';
+import {HttpClient} from "@angular/common/http";
 
 
 @Component({
@@ -20,14 +21,15 @@ export class AuthorizationComponent implements OnInit, OnDestroy, OnChanges {
   selectedValue: boolean;
   cardNumber: string;
   authTextButton: string;
-  
+
   @Input() inputProp = 'test';
   @Input() inputObj: any;
 
   constructor(private authService: AuthService,
               private messageService: MessageService,
               private router: Router,
-              private UserService: UserService
+              private userService: UserService,
+              private http: HttpClient
               ) { }
 
 
@@ -51,26 +53,38 @@ export class AuthorizationComponent implements OnInit, OnDestroy, OnChanges {
 
 
   onAuth(ev: Event): void {
-   
 
     const authUser: IUser = {
       psw: this.psw,
       login: this.login,
       cardNumber: this.cardNumber
     }
+    this.http.post<IUser>('http://localhost:3000/users/' + authUser.login, authUser).subscribe((data: IUser) => {
 
-    // const storedPsw = localStorage.getItem('psw');
-
-    if (this.authService.checkUser(authUser)) {
-      // console.log('auth true');
-      this.UserService.setUser(authUser);
-
-      this.UserService.setToken('user-private-token');
+      this.userService.setUser(authUser);
+      const token: string = 'user-private-token ' + data.id;
+      this.userService.setToken(token);
+      // this.userService.setToStore(token);
 
       this.router.navigate(['tickets/tickets-list']);
-    } else {
-      console.log('auth false');
-      this.messageService.add({severity:'error', summary:'Service Message', detail:'Неверные данные'});
-    }
+
+    }, ()=> {
+      this.messageService.add({severity:'warn', summary:"Ошибка"});
+    });
+
+    //
+    // // const storedPsw = localStorage.getItem('psw');
+    //
+    // if (this.authService.checkUser(authUser)) {
+    //   // console.log('auth true');
+    //   this.userService.setUser(authUser);
+    //
+    //   this.userService.setToken('user-private-token');
+    //
+    //   this.router.navigate(['tickets/tickets-list']);
+    // } else {
+    //   console.log('auth false');
+    //   this.messageService.add({severity:'error', summary:'Service Message', detail:'Неверные данные'});
+    // }
   }
 }
