@@ -4,6 +4,8 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import {MessageService} from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from 'src/app/services/user/user.service';
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {ServerError} from "../../../models/error";
 
 
 @Component({
@@ -20,14 +22,15 @@ export class AuthorizationComponent implements OnInit, OnDestroy, OnChanges {
   selectedValue: boolean;
   cardNumber: string;
   authTextButton: string;
-  
+
   @Input() inputProp = 'test';
   @Input() inputObj: any;
 
   constructor(private authService: AuthService,
               private messageService: MessageService,
               private router: Router,
-              private UserService: UserService
+              private userService: UserService,
+              private http: HttpClient
               ) { }
 
 
@@ -51,7 +54,7 @@ export class AuthorizationComponent implements OnInit, OnDestroy, OnChanges {
 
 
   onAuth(ev: Event): void {
-   
+
 
     const authUser: IUser = {
       psw: this.psw,
@@ -59,18 +62,32 @@ export class AuthorizationComponent implements OnInit, OnDestroy, OnChanges {
       cardNumber: this.cardNumber
     }
 
-    // const storedPsw = localStorage.getItem('psw');
-
-    if (this.authService.checkUser(authUser)) {
-      // console.log('auth true');
-      this.UserService.setUser(authUser);
-
-      this.UserService.setToken('user-private-token');
+    this.http.post<{ access_token: string, id: string}>('http://localhost:3000/users/'+authUser.login, authUser).subscribe((data) => {
+      authUser.id = data.id;
+      this.userService.setUser(authUser);
+      const token: string = data.access_token;
+      this.userService.setToken(token);
+      // this.userService.setToStore(token);
 
       this.router.navigate(['tickets/tickets-list']);
-    } else {
-      console.log('auth false');
-      this.messageService.add({severity:'error', summary:'Service Message', detail:'Неверные данные'});
-    }
+
+    }, (err: HttpErrorResponse)=> {
+      const serverError = <ServerError>err.error;
+      this.messageService.add({severity:'warn',  summary: serverError.errorText});
+    });
+
+    // const storedPsw = localStorage.getItem('psw');
+
+    // if (this.authService.checkUser(authUser)) {
+    //   // console.log('auth true');
+    //   this.UserService.setUser(authUser);
+    //
+    //   this.UserService.setToken('user-private-token');
+    //
+    //   this.router.navigate(['tickets/tickets-list']);
+    // } else {
+    //   console.log('auth false');
+    //   this.messageService.add({severity:'error', summary:'Service Message', detail:'Неверные данные'});
+    // }
   }
 }

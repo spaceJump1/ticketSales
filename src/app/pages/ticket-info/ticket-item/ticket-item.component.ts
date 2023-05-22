@@ -7,6 +7,7 @@ import { IUser } from 'src/app/models/users';
 import { TicketStorageService } from 'src/app/services/ticket-storage/ticket-storage.service';
 import { TicketsService } from 'src/app/services/tickets/tickets.service';
 import { UserService } from 'src/app/services/user/user.service';
+import {IOrder} from "../../../models/order";
 
 @Component({
   selector: 'app-ticket-item',
@@ -30,7 +31,7 @@ export class TicketItemComponent implements OnInit, AfterViewInit {
   searchTypes = [1, 2, 3];
 
   @ViewChild('ticketSearch') ticketSearch: ElementRef
-  
+
   constructor(
     private ticketStorage: TicketStorageService,
     private route: ActivatedRoute,
@@ -57,7 +58,7 @@ export class TicketItemComponent implements OnInit, AfterViewInit {
     // get nearest tours
     // forkJoin([this.ticketService.getNearestTours(), this.ticketService.getToursLocation()]).subscribe(data => {
     //   this.nearestTours = data[0];
-    //   this.toursLocation = data[1];      
+    //   this.toursLocation = data[1];
     // })
 
     forkJoin([this.ticketService.getNearestTours(), this.ticketService.getToursLocation()]).subscribe((data) => {
@@ -73,9 +74,13 @@ export class TicketItemComponent implements OnInit, AfterViewInit {
     const paramValueId = routeIdParam || queryIdParam;
 
     if (paramValueId) {
-      const ticketStorage = this.ticketStorage.getStorage();
-      this.ticket = ticketStorage.find((el) => el.id === paramValueId);
-      console.log('this.ticket', this.ticket);
+
+      this.ticketService.getTicketsById(paramValueId).subscribe((data) => {
+        this.ticket = data
+      });
+      // const ticketStorage = this.ticketStorage.getStorage();
+      // this.ticket = ticketStorage.find((el) => el.id === paramValueId);
+      // console.log('this.ticket', this.ticket);
     }
   }
 
@@ -115,12 +120,20 @@ export class TicketItemComponent implements OnInit, AfterViewInit {
     const userData = this.userForm.getRawValue();
     const postData = {...this.ticket, ...userData};
     // console.log('postData', postData);
-    console.log('this.userForm.getRawValue()', this.userForm.getRawValue());
+    // console.log('this.userForm.getRawValue()', this.userForm.getRawValue());
 
-    // this.ticketService.sendTourData(postData).subscribe();
+    const userId = this.userService.getUser()?.id || null;
+    const postObj: IOrder = {
+      age: postData.age,
+      birthDay: postData.birthDay,
+      cardNumber: postData.cardNumber,
+      tourId: postData._id,
+      userId: userId,
+    }
+    this.ticketService.sendTourData(postObj).subscribe()
   }
 
   selectDate(ev: Event): void {
-    
+
   }
 }

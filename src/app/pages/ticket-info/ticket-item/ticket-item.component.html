@@ -6,7 +6,7 @@
     <div class="mt-4">
         <h4>Информация о туре</h4>
         <div class="mt-3">
-            {{ticket?.name}}
+          <p>Название тура: </p>{{ticket?.name}}
             {{ticket?.price}} <br>
             {{ticket?.description}} <br>
         </div>
@@ -28,7 +28,7 @@
                 pInputText
                 formControlName="lastName">
             </div>
-            
+
             <div class="mt-3">
                 <ng-container *ngTemplateOutlet="userFieldTitle; context:{titleValue: 'Номер карты'}"></ng-container>
 
@@ -36,7 +36,7 @@
                 pInputText
                 formControlName="cardNumber">
             </div>
-            
+
             <div class="mt-3">
                 <ng-container *ngTemplateOutlet="userFieldTitle; context:{titleValue: 'Возраст'}"></ng-container>
                 <p-inputNumber formControlName="age"
@@ -83,7 +83,7 @@
             </ng-template>
         </p-carousel>
     </div>
-    
+
 </div>
 
 <ng-template #userFieldTitle let-value='titleValue'>

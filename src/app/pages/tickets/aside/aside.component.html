@@ -1,10 +1,10 @@
-<div>
-    <p-dropdown [options]="menuTypes"
-                [(ngModel)]="selectedMenuType"
-                optionLabel="label"
-                (onChange)="changeType($event)">
-    </p-dropdown>
-  </div>
+  <div>
+      <p-dropdown [options]="menuTypes"
+                  [(ngModel)]="selectedMenuType"
+                  optionLabel="label"
+                  (onChange)="changeType($event)">
+      </p-dropdown>
+    </div>
  <!--Добавлен новый список-->
   <div class="mt-3">
     <p-dropdown class="mt-3"
@@ -16,11 +16,19 @@
   <div class="mt-3">
     <p-calendar (onSelect)="selectDate($event)" ></p-calendar>
   </div>
+
   <button type="button" class="mt-3 btn btn-danger" (click)="initRestError()">Danger</button>
 
   <div class="mt-3">
     <button (click)="initSettingsData()" class="btn btn-sm">Обновить Настройки</button>
   </div>
 
-  
+  <div class="mt-3">
+    <button (click)="initTours()" class="btn btn-sm">Сформировать туры</button>
+  </div>
+
+  <div class="mt-3">
+    <button (click)="deleteTours()" class="btn btn-sm">Удалить туры</button>
+  </div>
+
   <p-toast position="top-left"></p-toast>

@@ -5,6 +5,7 @@ import { BlocksStyleDirective } from 'src/app/directive/blocks-style.directive';
 import { ITours, ITourTypeSelect  } from 'src/app/models/tours';
 import { TicketStorageService } from 'src/app/services/ticket-storage/ticket-storage.service';
 import { TicketsService } from 'src/app/services/tickets/tickets.service';
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-ticket-list',
@@ -39,24 +40,28 @@ export class TicketListComponent implements OnInit, AfterViewInit {
   constructor(private ticketService: TicketsService,
               private ticketStorage: TicketStorageService,
               private router: Router,
+              private http: HttpClient
               ) { }
 
   ngOnInit(): void {
-    this.ticketService.getTickets().subscribe(
-      (data) => {
-        this.tickets = data;
-        this.ticketCopy = [...this.tickets];
-        this.ticketStorage.setStorage(data);
+    // this.ticketService.getTickets().subscribe(
+    //   (data) => {
+    //     this.tickets = data;
+    //     this.ticketCopy = [...this.tickets];
+    //     this.ticketStorage.setStorage(data);
+    //
+    //     setTimeout(() => {
+    //       this.blockDirective.updateItems();
+    //       this.blockDirective.initStyle(0);  // сбрасываем индекс на 0 элемент
+    //     });
+    //   }
+    // );
 
-        setTimeout(() => {
-          this.blockDirective.updateItems();
-          this.blockDirective.initStyle(0);  // сбрасываем индекс на 0 элемент
-        });
-      }
-    );
+    this.ticketService.ticketUpdateSubject$.subscribe((data) => {
+      this.tickets = data;
+    })
 
-    this.tourUnsubscriber = this.ticketService.getTicketTypeObservable().subscribe((data: ITourTypeSelect) => {  
-      // console.log('data', data)  
+    this.tourUnsubscriber = this.ticketService.getTicketTypeObservable().subscribe((data: ITourTypeSelect) => {
 
       let ticketType: string;
       switch (data.value) {
@@ -69,7 +74,7 @@ export class TicketListComponent implements OnInit, AfterViewInit {
         case "all":
           this.tickets = [...this.ticketCopy];
           break;
- 
+
       }
 
       if (data.date) {
@@ -100,7 +105,7 @@ export class TicketListComponent implements OnInit, AfterViewInit {
    }
 
   goToTicketInfoPage(item: ITours) {
-    this.router.navigate([`/tickets/ticket/${item.id}`])
+    this.router.navigate([`/tickets/ticket/${item._id}`])
   }
 
   // findTours(ev: Event): void {

@@ -3,6 +3,7 @@ import { ICustomTicketData, INearestTour, ITourLocation, ITours } from 'src/app/
 import { Observable, Subject, Subscription, map } from 'rxjs';
 import { TicketRestService } from '../rest/ticket-rest.service';
 import { ITourTypeSelect } from 'src/app/models/tours';
+import {HttpClient} from "@angular/common/http";
 
 
 
@@ -13,28 +14,32 @@ export class TicketsService {
 
   customTicketData: ICustomTicketData[];
 
+  private ticketUpdateSubject = new Subject<ITours[]>();
+  readonly ticketUpdateSubject$ = this.ticketUpdateSubject.asObservable();
+
 
   private ticketSubject = new Subject<ITourTypeSelect>();
-  // readonly ticketType$ = this.ticketSubject.asObservable(); 
+  // readonly ticketType$ = this.ticketSubject.asObservable();
 
 
-  constructor(private ticketRestService: TicketRestService) { }
+  constructor(private ticketRestService: TicketRestService,
+              private http: HttpClient) { }
 
-  getTickets(): Observable<ITours[]> {
-    return this.ticketRestService.getTickets().pipe(map(
-
-      (value) => {
-        const singleTour = value.filter((el) => el.type === 'single');
-        return value.concat(singleTour);
-      }
-
-    ));
-  }
+  // getTickets(): Observable<ITours[]> {
+  //   return this.ticketRestService.getTickets().pipe(map(
+  //
+  //     (value) => {
+  //       const singleTour = value.filter((el) => el.type === 'single');
+  //       return value.concat(singleTour);
+  //     }
+  //
+  //   ));
+  // }
 
   getTicketTypeObservable(): Observable<ITourTypeSelect> {
-    return this.ticketSubject.asObservable(); 
+    return this.ticketSubject.asObservable();
    }
-    
+
    updateTour(type:ITourTypeSelect): void {
      this.ticketSubject.next(type);
    }
@@ -63,11 +68,24 @@ export class TicketsService {
 
   getRandomNearestEvent(type: number): Observable<INearestTour> {
     return this.ticketRestService.getRandomNearestEvent(type);
-  } 
+  }
 
+  updateTicketList(data: ITours[]) {
+    this.ticketUpdateSubject.next(data);
+  }
 
   sendTourData(data: any): Observable<any> {
     return this.ticketRestService.sendTourData(data);
+  }
+
+  getTickets(): void {
+      this.http.post<ITours[]>('http://localhost:3000/tours/', {}).subscribe((data) => {
+      this.updateTicketList(data);
+    });
+  }
+
+  getTicketsById(paramId: string): Observable<ITours> {
+    return this.http.get<ITours>(`http://localhost:3000/tours/${paramId}`);
   }
 
 }

@@ -7,7 +7,8 @@ export interface ITours {
     id: string,
     type: string,
     data: string,
-    date?: string
+    date?: string,
+    _id: string
 }
 
 export interface ITourTypeSelect {

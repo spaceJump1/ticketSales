@@ -1,9 +1,10 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { IMenuType } from 'src/app/models/menuType';
-import { ITourTypeSelect } from 'src/app/models/tours';
+import {ITours, ITourTypeSelect} from 'src/app/models/tours';
 import { SettingsService } from 'src/app/services/settings/settings.service';
 import { TicketsService } from 'src/app/services/tickets/tickets.service';
+import {HttpClient} from "@angular/common/http";
 
 
 @Component({
@@ -26,7 +27,8 @@ export class AsideComponent implements OnInit {
 
   constructor(private ticketService: TicketsService,
             private messageService: MessageService,
-            private settingsService: SettingsService) { }
+            private settingsService: SettingsService,
+            private http: HttpClient) { }
 
   ngOnInit(): void {
     this.menuTypes = [
@@ -52,7 +54,7 @@ export class AsideComponent implements OnInit {
 
   initRestError(): void {
     this.ticketService.getError().subscribe({ next:(data)=> {
-  
+
     },
     error: (err) => {
       console.log('err', err)
@@ -67,4 +69,17 @@ export class AsideComponent implements OnInit {
     });
    }
 
+   initTours(): void {
+    this.http.post<ITours[]>('http://localhost:3000/tours/', {}).subscribe((data) => {
+      this.ticketService.updateTicketList(data);
+    });
+
+     // this.ticketService.getTickets();
+   }
+
+   deleteTours(): void {
+     this.http.delete('http://localhost:3000/tours/remove').subscribe((data) => {
+       this.ticketService.updateTicketList([]);
+     });
+   }
 }
